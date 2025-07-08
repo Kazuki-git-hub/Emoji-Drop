@@ -11,6 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const holdButton = document.getElementById('hold-button');
     const holdTetrominoShapeElement = document.getElementById('hold-tetromino-shape');
     const achievementsElement = document.getElementById('achievements');
+    const playCountElement = document.getElementById('play-count');
+    const achievementsToggleButton = document.getElementById('achievements-toggle');
+    const achievementsListElement = document.getElementById('achievements-list');
+    const achievementsCloseButton = document.getElementById('achievements-close');
+    const streakCountElement = document.getElementById('streak-count');
 
     const BOARD_WIDTH = 10;
     const BOARD_HEIGHT = 20;
@@ -49,17 +54,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 実績リスト
     const ACHIEVEMENTS = [
-        { id: 'firstBlock', label: '初Emoji!', icon: '👍', unlocked: false },
-        { id: 'score100', label: 'スコア100達成', icon: '💰', unlocked: false },
-        { id: 'level5', label: 'レベル5到達', icon: '🚀', unlocked: false },
-        { id: 'hold', label: 'HOLD初使用', icon: '📥', unlocked: false },
-        { id: 'doubleClear', label: '2列同時消し', icon: '✌️', unlocked: false },
-        { id: 'emojiSwitch', label: '絵文字切替', icon: '🎨', unlocked: false },
-        { id: 'noClearGameOver', label: '無傷の落下', icon: '💀', unlocked: false },
-        { id: 'zeroScoreGameOver', label: 'まさかの0スコア', icon: '🫢', unlocked: false },
-        { id: 'leftmostTen', label: '左に極振り', icon: '👈', unlocked: false },
-        { id: 'fiveLinesInMinute', label: '瞬間芸人', icon: '⚡️', unlocked: false },
-        { id: 'oneHourSurvivor', label: '1時間Emoji耐久', icon: '🕰️', unlocked: false },
+        { id: 'firstBlock', label: '初Emoji!', icon: '👍', unlocked: false, description: 'ブロックを1つ落とす' },
+        { id: 'score100', label: 'スコア100', icon: '💰', unlocked: false, description: 'スコアを100点以上にする' },
+        { id: 'level5', label: 'レベル5', icon: '🚀', unlocked: false, description: 'レベル5に到達する' },
+        { id: 'hold', label: 'HOLD使用', icon: '📥', unlocked: false, description: 'HOLD機能を1回使用する' },
+        { id: 'doubleClear', label: '2列消し', icon: '✌️', unlocked: false, description: '2列を同時に消去する' },
+        { id: 'emojiSwitch', label: '絵文字切替', icon: '🎨', unlocked: false, description: '絵文字セットを切り替える' },
+        { id: 'noClearGameOver', label: '無傷終了', icon: '💀', unlocked: false, description: '1列も消さずにゲームオーバー' },
+        { id: 'zeroScoreGameOver', label: '0スコア', icon: '🫢', unlocked: false, description: 'スコア0でゲームオーバー' },
+        { id: 'leftmostTen', label: '左極振り', icon: '👈', unlocked: false, description: '10回連続で左端にブロックを落とす' },
+        { id: 'fiveLinesInMinute', label: '瞬間芸人', icon: '⚡️', unlocked: false, description: 'ゲーム開始1分以内に5列消去' },
+        { id: 'oneHourSurvivor', label: '1時間耐久', icon: '🕰️', unlocked: false, description: '1時間以上ゲームを続ける' },
+        { id: 'allAchievements', label: '支配者', icon: '👑', unlocked: false, description: 'すべての実績を解除する' },
+        { id: 'threeDaysStreak', label: '毎日Emoji', icon: '📅', unlocked: false, description: '3日連続でプレイする' },
+        { id: 'newHighScore', label: '進化中', icon: '📈', unlocked: false, description: 'ハイスコアを更新する' },
+        { id: 'hundredGames', label: '100ゲーム', icon: '🔁', unlocked: false, description: '100回ゲームをプレイする' },
+        { id: 'weekendPlayer', label: '休日帝王', icon: '🛌', unlocked: false, description: '土日にプレイする' },
     ];
 
     function createEmptyBoard() {
@@ -228,12 +238,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateAchievements() {
-        achievementsElement.innerHTML = '';
+        if (!achievementsListElement) return;
+        achievementsListElement.innerHTML = '';
         ACHIEVEMENTS.forEach(a => {
-            const badge = document.createElement('span');
+            const badge = document.createElement('div');
             badge.className = 'achievement' + (a.unlocked ? ' unlocked' : '');
-            badge.innerHTML = `<span class="achievement-icon">${a.icon}</span> ${a.label}`;
-            achievementsElement.appendChild(badge);
+            badge.setAttribute('data-description', a.description);
+            const iconSpan = document.createElement('span');
+            iconSpan.className = 'achievement-icon';
+            iconSpan.textContent = a.icon;
+            // 実績の種類に応じてアニメーションクラスを追加
+            if (a.unlocked) {
+                if (['score100', 'newHighScore'].includes(a.id)) {
+                    iconSpan.classList.add('score-animation');
+                } else if (['firstBlock', 'hold', 'emojiSwitch', 'doubleClear'].includes(a.id)) {
+                    iconSpan.classList.add('action-animation');
+                } else if (['allAchievements', 'fiveLinesInMinute'].includes(a.id)) {
+                    iconSpan.classList.add('special-animation');
+                } else if (['oneHourSurvivor', 'threeDaysStreak', 'hundredGames', 'weekendPlayer'].includes(a.id)) {
+                    iconSpan.classList.add('time-animation');
+                } else if (['leftmostTen'].includes(a.id)) {
+                    iconSpan.classList.add('fire-animation');
+                }
+            }
+            badge.appendChild(iconSpan);
+            const labelSpan = document.createElement('span');
+            labelSpan.textContent = a.label;
+            badge.appendChild(labelSpan);
+            achievementsListElement.appendChild(badge);
         });
     }
 
@@ -258,6 +290,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (gameOver && gameStartTime && (Date.now() - gameStartTime >= 60 * 60 * 1000)) {
             ACHIEVEMENTS.find(a => a.id === 'oneHourSurvivor').unlocked = true;
+        }
+        // 👑 すべての実績解除判定
+        const allExceptKing = ACHIEVEMENTS.filter(a => a.id !== 'allAchievements');
+        if (allExceptKing.every(a => a.unlocked)) {
+            ACHIEVEMENTS.find(a => a.id === 'allAchievements').unlocked = true;
+        }
+        // 📈 ハイスコア更新実績
+        if (gameOver) {
+            const highScore = parseInt(localStorage.getItem('emojiTetrisHighScore') || '0', 10);
+            if (score > highScore) {
+                localStorage.setItem('emojiTetrisHighScore', score);
+                ACHIEVEMENTS.find(a => a.id === 'newHighScore').unlocked = true;
+            }
         }
         updateAchievements();
     }
@@ -374,6 +419,93 @@ document.addEventListener('DOMContentLoaded', () => {
         moveDown();
     }
 
+    function checkThreeDaysStreak() {
+        // 今日の日付（YYYY-MM-DD）
+        const today = new Date();
+        const todayStr = today.getFullYear() + '-' + (today.getMonth()+1) + '-' + today.getDate();
+        const lastPlay = localStorage.getItem('emojiTetrisLastPlayDate');
+        let streak = parseInt(localStorage.getItem('emojiTetrisStreak') || '0', 10);
+        if (lastPlay) {
+            const last = new Date(lastPlay);
+            const diff = (today - last) / (1000*60*60*24);
+            if (diff >= 1 && diff < 2) {
+                streak += 1;
+            } else if (diff < 1) {
+                // 同じ日
+                // 何もしない
+            } else {
+                streak = 1;
+            }
+        } else {
+            streak = 1;
+        }
+        localStorage.setItem('emojiTetrisLastPlayDate', todayStr);
+        localStorage.setItem('emojiTetrisStreak', streak);
+        if (streak >= 3) {
+            ACHIEVEMENTS.find(a => a.id === 'threeDaysStreak').unlocked = true;
+        }
+    }
+
+    function checkHundredGames() {
+        let count = parseInt(localStorage.getItem('emojiTetrisPlayCount') || '0', 10);
+        count += 1;
+        localStorage.setItem('emojiTetrisPlayCount', count);
+        if (count >= 100) {
+            ACHIEVEMENTS.find(a => a.id === 'hundredGames').unlocked = true;
+        }
+    }
+
+    function updatePlayCount() {
+        const count = parseInt(localStorage.getItem('emojiTetrisPlayCount') || '0', 10);
+        if (playCountElement) {
+            playCountElement.setAttribute('data-count', String(count));
+        }
+    }
+
+    function checkWeekendPlayer() {
+        const today = new Date();
+        const dayOfWeek = today.getDay(); // 0=日曜日, 6=土曜日
+        if (dayOfWeek === 0 || dayOfWeek === 6) {
+            ACHIEVEMENTS.find(a => a.id === 'weekendPlayer').unlocked = true;
+        }
+    }
+
+    function updateStreakCount() {
+        const streak = parseInt(localStorage.getItem('emojiTetrisStreak') || '0', 10);
+        if (streakCountElement) {
+            streakCountElement.setAttribute('data-streak', String(streak));
+            // 炎マークを数字の後ろに追加（重複しないように一度消してから追加）
+            streakCountElement.querySelectorAll('.streak-fire').forEach(e => e.remove());
+            const fire = document.createElement('span');
+            fire.className = 'streak-fire';
+            fire.textContent = '🔥';
+            streakCountElement.appendChild(fire);
+        }
+    }
+
+    function updateStreakOnGameStart() {
+        const today = new Date();
+        const todayStr = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+        const lastStreakDate = localStorage.getItem('emojiTetrisLastStreakDate');
+        let streak = parseInt(localStorage.getItem('emojiTetrisStreak') || '0', 10);
+        if (lastStreakDate) {
+            const last = new Date(lastStreakDate);
+            // 日付差分（日単位）
+            const diff = Math.floor((today - last) / (1000 * 60 * 60 * 24));
+            if (diff === 1) {
+                streak += 1;
+            } else if (diff === 0) {
+                // 同じ日→何もしない
+            } else {
+                streak = 1;
+            }
+        } else {
+            streak = 1;
+        }
+        localStorage.setItem('emojiTetrisLastStreakDate', todayStr);
+        localStorage.setItem('emojiTetrisStreak', String(streak));
+    }
+
     function startGame() {
         clearInterval(gameInterval);
         isGameOver = false;
@@ -394,6 +526,12 @@ document.addEventListener('DOMContentLoaded', () => {
         gameStartTime = Date.now();
         // 実績リセット
         ACHIEVEMENTS.forEach(a => a.unlocked = false);
+        updateStreakOnGameStart();
+        checkThreeDaysStreak();
+        checkHundredGames();
+        checkWeekendPlayer();
+        updatePlayCount();
+        updateStreakCount();
         updateAchievements();
         draw();
         gameInterval = setInterval(gameLoop, dropSpeed);
@@ -508,10 +646,121 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    if (achievementsToggleButton) {
+        achievementsToggleButton.addEventListener('click', () => {
+            document.getElementById('achievements').classList.toggle('show');
+        });
+    }
+
+    if (achievementsCloseButton) {
+        achievementsCloseButton.addEventListener('click', () => {
+            document.getElementById('achievements').classList.remove('show');
+        });
+    }
+
     // 初期表示
     function init() {
         draw();
         updateAchievements();
+        updatePlayCount();
+        updateStreakCount();
+    }
+
+    // 日付・時刻表示
+    function updateDateTimeDisplay() {
+        const dt = new Date();
+        const yyyy = dt.getFullYear();
+        const mm = String(dt.getMonth() + 1).padStart(2, '0');
+        const dd = String(dt.getDate()).padStart(2, '0');
+        const hh = String(dt.getHours()).padStart(2, '0');
+        const min = String(dt.getMinutes()).padStart(2, '0');
+        const ss = String(dt.getSeconds()).padStart(2, '0');
+        const str = `${yyyy}/${mm}/${dd} ${hh}:${min}:${ss}`;
+        const el = document.getElementById('datetime-display');
+        if (el) el.textContent = str;
+    }
+    updateDateTimeDisplay();
+    setInterval(updateDateTimeDisplay, 1000);
+
+    // ==== ファビコン動的切り替え ====
+    (function setupEmojiFavicon() {
+        const allEmojis = EMOJI_SETS.flat();
+        let faviconIndex = 0;
+        function setFavicon(emoji) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 64;
+            canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            ctx.font = '48px serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.clearRect(0, 0, 64, 64);
+            ctx.fillText(emoji, 32, 36);
+            const url = canvas.toDataURL();
+            let link = document.querySelector("link[rel~='icon']");
+            if (!link) {
+                link = document.createElement('link');
+                link.rel = 'icon';
+                document.head.appendChild(link);
+            }
+            link.href = url;
+        }
+        setFavicon(allEmojis[0]);
+        setInterval(() => {
+            faviconIndex = (faviconIndex + 1) % allEmojis.length;
+            setFavicon(allEmojis[faviconIndex]);
+        }, 500);
+    })();
+
+    // === 草原の背景に家・人・動物を配置して動かす ===
+    const bgLayer = document.getElementById('emoji-bg-layer');
+    if (bgLayer) {
+        const houses = ['🏠','🏡'];
+        const people = ['🧑','👩‍🦱','👨‍🦰'];
+        const animals = ['🐶','🐱','🐰','🦊','🐻'];
+        // 家を配置（静止）
+        houses.forEach((emoji, i) => {
+            const el = document.createElement('div');
+            el.className = 'emoji-bg-obj';
+            el.textContent = emoji;
+            el.style.left = `${15 + i*50}%`;
+            el.style.bottom = '12%';
+            el.style.fontSize = '2.5rem';
+            bgLayer.appendChild(el);
+        });
+        // 人を配置（動く）
+        people.forEach((emoji, i) => {
+            const el = document.createElement('div');
+            el.className = 'emoji-bg-obj';
+            el.textContent = emoji;
+            el.style.left = `${20 + i*20}%`;
+            el.style.bottom = '10%';
+            el.style.fontSize = '2.1rem';
+            bgLayer.appendChild(el);
+            moveBgEmoji(el, 1.5 + Math.random());
+        });
+        // 動物を配置（動く）
+        animals.forEach((emoji, i) => {
+            const el = document.createElement('div');
+            el.className = 'emoji-bg-obj';
+            el.textContent = emoji;
+            el.style.left = `${10 + i*15}%`;
+            el.style.bottom = `${7 + Math.random()*4}%`;
+            el.style.fontSize = '2.1rem';
+            bgLayer.appendChild(el);
+            moveBgEmoji(el, 1 + Math.random());
+        });
+        // 移動アニメーション関数
+        function moveBgEmoji(el, speed) {
+            function move() {
+                const left = Math.random() * 80 + 5;
+                const bottom = 7 + Math.random() * 8;
+                el.style.left = `${left}%`;
+                el.style.bottom = `${bottom}%`;
+                setTimeout(move, 4000 + Math.random()*4000/speed);
+            }
+            setTimeout(move, 1000 + Math.random()*2000);
+        }
     }
 
     init();

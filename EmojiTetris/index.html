@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="top-left-info">
+        <div id="datetime-display"></div>
+        <div id="play-count" class="play-count" data-count="0"></div>
+        <div id="streak-count" class="streak-count" data-streak="0"></div>
+    </div>
     <h1>Emoji Drop</h1>
     <div id="game-container">
         <div id="hold-panel">
@@ -27,7 +32,16 @@
             <button id="restart-always-button">RESTART</button>
         </div>
     </div>
-    <div id="achievements"></div>
+    <button id="achievements-toggle">🏆 実績</button>
+    <div id="achievements" class="achievements-popup">
+        <div class="achievements-card">
+            <div class="achievements-header">
+                <span class="achievements-title">🏆 実績</span>
+                <button id="achievements-close" class="achievements-close">✕</button>
+            </div>
+            <div id="achievements-list" class="achievements-list"></div>
+        </div>
+    </div>
     <div id="game-over" class="hidden">
         <p>GAME OVER</p>
         <button id="restart-button">RESTART</button>
