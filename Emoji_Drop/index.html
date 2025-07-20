@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Drop</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div id="top-left-info">
+        <div id="datetime-display"></div>
+        <div id="play-count" class="play-count" data-count="0"></div>
+        <div id="streak-count" class="streak-count" data-streak="0"></div>
+    </div>
+    <h1>Emoji Drop</h1>
+    <div id="game-container">
+        <div id="hold-panel">
+            <h3>HOLD</h3>
+            <div id="hold-tetromino-shape"></div>
+            <button id="hold-button">HOLD</button>
+        </div>
+        <div id="game-board"></div>
+        <div id="info">
+            <h2>SCORE: <span id="score">0</span></h2>
+            <h3>LEVEL: <span id="level">1</span></h3>
+            <div id="next-tetromino">
+                <h3>NEXT EMOJI</h3>
+                <div id="next-tetromino-shape"></div>
+            </div>
+            <button id="start-button">START</button>
+            <button id="emoji-switch-button">CHANGE EMOJI</button>
+            <button id="restart-always-button" class="hidden">RESTART</button>
+        </div>
+    </div>
+    <button id="achievements-toggle">🏆 実績</button>
+    <button id="new-button">新ボタン</button>
+    <div id="game-over" class="hidden">
+        <p>GAME OVER</p>
+        <button id="restart-button">RESTART</button>
+    </div>
+    <script src="./js/script.js"></script>
+</body>
+</html> 
