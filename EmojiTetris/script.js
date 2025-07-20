@@ -648,7 +648,59 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (achievementsToggleButton) {
         achievementsToggleButton.addEventListener('click', () => {
-            document.getElementById('achievements').classList.toggle('show');
+            const isExpanded = achievementsToggleButton.classList.contains('expanded');
+            if (!isExpanded) {
+                achievementsToggleButton.classList.add('expanded');
+                // 実績一覧のHTMLを生成
+                const achievementsHeader = document.createElement('div');
+                achievementsHeader.className = 'achievements-header';
+                const title = document.createElement('span');
+                title.className = 'achievements-title';
+                title.textContent = '🏆 実績';
+                const closeBtn = document.createElement('button');
+                closeBtn.className = 'achievements-close';
+                closeBtn.textContent = '✕';
+                closeBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    achievementsToggleButton.classList.remove('expanded');
+                    achievementsToggleButton.innerHTML = '🏆 実績';
+                };
+                achievementsHeader.appendChild(title);
+                achievementsHeader.appendChild(closeBtn);
+                // 実績リストラッパーを作成
+                const list = document.createElement('div');
+                list.className = 'achievements-list';
+                ACHIEVEMENTS.forEach(a => {
+                    const badge = document.createElement('div');
+                    badge.className = 'achievement' + (a.unlocked ? ' unlocked' : '');
+                    badge.setAttribute('data-description', a.description);
+                    const iconSpan = document.createElement('span');
+                    iconSpan.className = 'achievement-icon';
+                    iconSpan.textContent = a.icon;
+                    // 実績の種類に応じてアニメーションクラスを追加
+                    if (a.unlocked) {
+                        if (["score100", "newHighScore"].includes(a.id)) {
+                            iconSpan.classList.add('score-animation');
+                        } else if (["firstBlock", "hold", "emojiSwitch", "doubleClear"].includes(a.id)) {
+                            iconSpan.classList.add('action-animation');
+                        } else if (["allAchievements", "fiveLinesInMinute"].includes(a.id)) {
+                            iconSpan.classList.add('special-animation');
+                        } else if (["oneHourSurvivor", "threeDaysStreak", "hundredGames", "weekendPlayer"].includes(a.id)) {
+                            iconSpan.classList.add('time-animation');
+                        } else if (["leftmostTen"].includes(a.id)) {
+                            iconSpan.classList.add('fire-animation');
+                        }
+                    }
+                    badge.appendChild(iconSpan);
+                    const labelSpan = document.createElement('span');
+                    labelSpan.textContent = a.label;
+                    badge.appendChild(labelSpan);
+                    list.appendChild(badge);
+                });
+                achievementsToggleButton.innerHTML = '';
+                achievementsToggleButton.appendChild(achievementsHeader);
+                achievementsToggleButton.appendChild(list);
+            }
         });
     }
 
